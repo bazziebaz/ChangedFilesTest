@@ -14,15 +14,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Echo Message
-        run: echo "Changes detected"
-
-      - name: List all changed files
-        run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-          done
-
       - name: Check for changes, only on Src1
         id: changed-files-specific-src1
         uses: tj-actions/changed-files@v40
