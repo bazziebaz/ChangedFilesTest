@@ -1,0 +1,48 @@
+name: Generic trigger for mulitple source paths
+
+on:
+  push:
+    paths:
+      - 'Src1/**'
+      - 'Src2/**'
+
+jobs:
+  echo-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Echo Message
+        run: echo "Changes detected"
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      - name: Check for changes, only on Src1
+        id: changed-files-specific-src1
+        uses: tj-actions/changed-files@v40
+        with:
+          files: Src1/*
+
+      - name: Check for changes, only on Src2
+        id: changed-files-specific-src2
+        uses: tj-actions/changed-files@v40
+        with:
+          files: Src2/*
+
+      - name: Echo, only on Src1
+        if: steps.changed-files-specific-src1.outputs.any_changed == 'true'
+        run: |
+          echo "One or more files in the Src1 folder has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files-specific-src1.outputs.all_changed_files }}"
+
+      - name: Echo, only on Src2
+        if: steps.changed-files-specific-src2.outputs.any_changed == 'true'
+        run: |
+          echo "One or more files in the Src2 folder has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files-specific-src2.outputs.all_changed_files }}"
